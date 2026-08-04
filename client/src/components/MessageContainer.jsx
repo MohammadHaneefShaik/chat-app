@@ -3,12 +3,14 @@ import useConversation from '../zustand/useConversation';
 import MessageInput from './MessageInput';
 import Messages from './Messages';
 import { useSocketContext } from '../context/SocketContext';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Phone, Video } from 'lucide-react';
+import useWebRTC from '../hooks/useWebRTC';
 
 const MessageContainer = () => {
     const { selectedConversation, setSelectedConversation } = useConversation();
     const { onlineUsers, socket } = useSocketContext();
     const [isTyping, setIsTyping] = useState(false);
+    const { startCall } = useWebRTC();
 
     useEffect(() => {
         return () => setSelectedConversation(null);
@@ -101,6 +103,25 @@ const MessageContainer = () => {
                                 </span>
                             </div>
                         </div>
+                        {/* Call buttons — only for 1-on-1 chats */}
+                        {!selectedConversation.isGroup && (
+                            <div className='flex items-center gap-1'>
+                                <button
+                                    onClick={() => startCall(selectedConversation, 'audio')}
+                                    className='p-2 rounded-xl text-chat-textMuted hover:text-chat-accent hover:bg-chat-panel transition-all'
+                                    title='Audio Call'
+                                >
+                                    <Phone size={20} />
+                                </button>
+                                <button
+                                    onClick={() => startCall(selectedConversation, 'video')}
+                                    className='p-2 rounded-xl text-chat-textMuted hover:text-chat-accent hover:bg-chat-panel transition-all'
+                                    title='Video Call'
+                                >
+                                    <Video size={20} />
+                                </button>
+                            </div>
+                        )}
                     </div>
                     <Messages />
                     <MessageInput />

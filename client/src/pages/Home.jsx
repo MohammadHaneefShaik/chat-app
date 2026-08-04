@@ -1,5 +1,6 @@
 import Sidebar from '../components/Sidebar';
 import MessageContainer from '../components/MessageContainer';
+import CallModal from '../components/CallModal';
 
 const Home = () => {
     return (
@@ -10,6 +11,8 @@ const Home = () => {
                     <MessageContainer />
                 </div>
             </div>
+            {/* Global call overlay — renders on top of everything */}
+            <CallModal />
         </div>
     );
 };
