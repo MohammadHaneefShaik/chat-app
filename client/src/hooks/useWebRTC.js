@@ -3,6 +3,7 @@ import { useSocketContext } from '../context/SocketContext';
 import { useAuthContext } from '../context/AuthContext';
 import useCallStore from '../zustand/useCallStore';
 import { webRTCHandlers } from '../context/SocketContext';
+import toast from 'react-hot-toast';
 
 const STUN_SERVERS = {
     iceServers: [
@@ -107,7 +108,14 @@ const useWebRTC = () => {
                 },
             });
         } catch (err) {
-            console.error('startCall error:', err);
+            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                toast.error('Microphone/camera permission denied. Please allow access in your browser settings.');
+            } else if (err.name === 'NotFoundError') {
+                toast.error('No microphone or camera found on this device.');
+            } else {
+                toast.error('Could not start call. Please try again.');
+                console.error('startCall error:', err);
+            }
             cleanupCall();
         }
     }, [socket, authUser, getMedia, createPeerConnection, setLocalStream, setReceiver, setCallType, setCallState, cleanupCall]);
@@ -136,7 +144,14 @@ const useWebRTC = () => {
 
             setCallState('in-call');
         } catch (err) {
-            console.error('answerCall error:', err);
+            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                toast.error('Microphone/camera permission denied. Please allow access to accept calls.');
+            } else if (err.name === 'NotFoundError') {
+                toast.error('No microphone or camera found on this device.');
+            } else {
+                toast.error('Could not connect call. Please try again.');
+                console.error('answerCall error:', err);
+            }
             cleanupCall();
         }
     }, [socket, getMedia, createPeerConnection, setLocalStream, setCallState, cleanupCall]);

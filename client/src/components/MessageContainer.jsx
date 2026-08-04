@@ -5,6 +5,7 @@ import Messages from './Messages';
 import { useSocketContext } from '../context/SocketContext';
 import { ArrowLeft, Phone, Video } from 'lucide-react';
 import useWebRTC from '../hooks/useWebRTC';
+import axios from 'axios';
 
 const MessageContainer = () => {
     const { selectedConversation, setSelectedConversation } = useConversation();
@@ -59,14 +60,10 @@ const MessageContainer = () => {
         if (selectedConversation) {
             const markAsRead = async () => {
                 try {
-                    await fetch(`/api/messages/mark-read/${selectedConversation._id}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
+                    // Use axios (not fetch) so it uses the Render base URL, not Vercel
+                    await axios.put(`/api/messages/mark-read/${selectedConversation._id}`);
                 } catch (error) {
-                    console.log(error);
+                    console.log('mark-read error:', error);
                 }
             };
             markAsRead();
