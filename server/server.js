@@ -17,9 +17,19 @@ dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
+// Strip trailing slash to prevent CORS mismatch (browsers send origin without trailing slash)
+const allowedOrigin = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '');
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-    credentials: true, // Allow cookies to be sent
+    origin: (origin, callback) => {
+        // Allow requests with no origin (e.g. mobile apps, curl, Render health checks)
+        if (!origin) return callback(null, true);
+        if (origin === allowedOrigin || origin === 'http://localhost:5173') {
+            return callback(null, true);
+        }
+        return callback(new Error(`CORS: origin ${origin} not allowed`));
+    },
+    credentials: true,
 }));
 
 app.use(express.json({ limit: '50mb' })); // to parse the incoming requests with JSON payloads (from req.body)
