@@ -23,7 +23,9 @@ const Register = () => {
             setAuthUser(res.data);
             toast.success('Registered successfully!');
         } catch (error) {
-            toast.error(error.response?.data?.error || 'Registration failed');
+            const errorData = error.response?.data?.error;
+            const errorMessage = typeof errorData === 'string' ? errorData : errorData?.message || 'Registration failed';
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }

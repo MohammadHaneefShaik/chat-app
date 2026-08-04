@@ -19,7 +19,16 @@ const Login = () => {
             setAuthUser(res.data);
             toast.success('Logged in successfully!');
         } catch (error) {
-            toast.error(error.response?.data?.error || 'Login failed');
+            const errorData = error.response?.data?.error;
+            let errorMessage;
+            if (typeof errorData === 'string') {
+                errorMessage = errorData;
+            } else if (errorData && typeof errorData === 'object') {
+                errorMessage = String(errorData.message || 'Login failed');
+            } else {
+                errorMessage = error.message || 'Login failed';
+            }
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }

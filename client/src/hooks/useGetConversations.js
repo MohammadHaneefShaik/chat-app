@@ -16,7 +16,16 @@ const useGetConversations = () => {
                 ]);
                 setConversations([...groupsRes.data, ...usersRes.data]);
             } catch (error) {
-                toast.error(error.response?.data?.error || 'Failed to get conversations');
+                const errorData = error.response?.data?.error;
+                let errorMessage;
+                if (typeof errorData === 'string') {
+                    errorMessage = errorData;
+                } else if (errorData && typeof errorData === 'object') {
+                    errorMessage = String(errorData.message || 'Failed to get conversations');
+                } else {
+                    errorMessage = error.message || 'Failed to get conversations';
+                }
+                toast.error(errorMessage);
             } finally {
                 setLoading(false);
             }
